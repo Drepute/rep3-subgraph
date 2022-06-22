@@ -7,6 +7,7 @@ export function handleProxyDeployed(event: ProxyDeployed): void {
   let dao = Dao.load(event.params.contractAddress);
   if (!dao) {
     dao = new Dao(event.params.contractAddress);
+    dao.txHash = event.transaction.hash;
   }
   REP3TokenTemplate.create(event.params.contractAddress);
   dao.save();

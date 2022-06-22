@@ -18,6 +18,7 @@ export class Dao extends Entity {
 
     this.set("name", Value.fromString(""));
     this.set("symbol", Value.fromString(""));
+    this.set("txHash", Value.fromBytes(Bytes.empty()));
     this.set("totalSupply", Value.fromBigInt(BigInt.zero()));
   }
 
@@ -64,6 +65,15 @@ export class Dao extends Entity {
     this.set("symbol", Value.fromString(value));
   }
 
+  get txHash(): Bytes {
+    let value = this.get("txHash");
+    return value!.toBytes();
+  }
+
+  set txHash(value: Bytes) {
+    this.set("txHash", Value.fromBytes(value));
+  }
+
   get membershipNFT(): Array<Bytes> {
     let value = this.get("membershipNFT");
     return value!.toBytesArray();
@@ -81,6 +91,15 @@ export class Dao extends Entity {
   set totalSupply(value: BigInt) {
     this.set("totalSupply", Value.fromBigInt(value));
   }
+
+  get associationBadges(): Array<Bytes> {
+    let value = this.get("associationBadges");
+    return value!.toBytesArray();
+  }
+
+  set associationBadges(value: Array<Bytes>) {
+    this.set("associationBadges", Value.fromBytesArray(value));
+  }
 }
 
 export class MembershipNFT extends Entity {
@@ -91,6 +110,9 @@ export class MembershipNFT extends Entity {
     this.set("tokenID", Value.fromBigInt(BigInt.zero()));
     this.set("contractAddress", Value.fromBytes(Bytes.empty()));
     this.set("claimer", Value.fromBytes(Bytes.empty()));
+    this.set("metadatUri", Value.fromString(""));
+    this.set("level", Value.fromString(""));
+    this.set("category", Value.fromString(""));
   }
 
   save(): void {
@@ -155,6 +177,33 @@ export class MembershipNFT extends Entity {
   set claimer(value: Bytes) {
     this.set("claimer", Value.fromBytes(value));
   }
+
+  get metadatUri(): string {
+    let value = this.get("metadatUri");
+    return value!.toString();
+  }
+
+  set metadatUri(value: string) {
+    this.set("metadatUri", Value.fromString(value));
+  }
+
+  get level(): string {
+    let value = this.get("level");
+    return value!.toString();
+  }
+
+  set level(value: string) {
+    this.set("level", Value.fromString(value));
+  }
+
+  get category(): string {
+    let value = this.get("category");
+    return value!.toString();
+  }
+
+  set category(value: string) {
+    this.set("category", Value.fromString(value));
+  }
 }
 
 export class AssociationBadges extends Entity {
@@ -166,6 +215,8 @@ export class AssociationBadges extends Entity {
     this.set("contractAddress", Value.fromBytes(Bytes.empty()));
     this.set("membershipNFT", Value.fromBytes(Bytes.empty()));
     this.set("type", Value.fromI32(0));
+    this.set("metadatUri", Value.fromString(""));
+    this.set("claimer", Value.fromBytes(Bytes.empty()));
   }
 
   save(): void {
@@ -229,5 +280,23 @@ export class AssociationBadges extends Entity {
 
   set type(value: i32) {
     this.set("type", Value.fromI32(value));
+  }
+
+  get metadatUri(): string {
+    let value = this.get("metadatUri");
+    return value!.toString();
+  }
+
+  set metadatUri(value: string) {
+    this.set("metadatUri", Value.fromString(value));
+  }
+
+  get claimer(): Bytes {
+    let value = this.get("claimer");
+    return value!.toBytes();
+  }
+
+  set claimer(value: Bytes) {
+    this.set("claimer", Value.fromBytes(value));
   }
 }
