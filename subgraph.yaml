@@ -1,4 +1,4 @@
-specVersion: 0.0.1
+specVersion: 0.0.2
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,22 +8,45 @@ dataSources:
     source:
       address: "0xe92429998Eb60bA7B7586277D01941E54Ff92398"
       abi: Manager
+      startBlock: 26817717
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - MetaTransactionExecuted
-        - OwnershipTransferred
         - ProxyDeployed
       abis:
         - name: Manager
           file: ./abis/Manager.json
       eventHandlers:
-        - event: MetaTransactionExecuted(address,address,bytes)
-          handler: handleMetaTransactionExecuted
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: ProxyDeployed(indexed address,indexed string)
           handler: handleProxyDeployed
       file: ./src/mapping.ts
+templates:
+  - kind: ethereum/contract
+    name: REP3Token
+    network: mumbai
+    source:
+      abi: REP3Token
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Dao
+        - MembershipNFT
+        - AssociationBadges
+        - Approver
+      abis:
+        - name: REP3Token
+          file: ./abis/REP3Token.json
+        - name: Manager
+          file: ./abis/Manager.json
+      eventHandlers:
+        - event: Claim(indexed uint8,indexed uint8,indexed uint256)
+          handler: handleClaim
+        - event: Issue(indexed uint8,indexed uint256)
+          handler: handleIssue
+        # - event: ApproverAdded(indexed address)
+        #   handler: handleApproverAdded

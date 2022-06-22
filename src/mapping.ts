@@ -1,58 +1,35 @@
-import { BigInt } from "@graphprotocol/graph-ts"
-import {
-  Manager,
-  MetaTransactionExecuted,
-  OwnershipTransferred,
-  ProxyDeployed
-} from "../generated/Manager/Manager"
-import { ExampleEntity } from "../generated/schema"
+import { ProxyDeployed } from "../generated/Manager/Manager";
+import { Claim, Issue } from "../generated/templates/REP3Token/REP3Token";
+import { AssociationBadges, Dao, MembershipNFT } from "../generated/schema";
+import { REP3Token as REP3TokenTemplate } from "../generated/templates";
 
-export function handleMetaTransactionExecuted(
-  event: MetaTransactionExecuted
-): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  let entity = ExampleEntity.load(event.transaction.from.toHex())
-
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
-  if (!entity) {
-    entity = new ExampleEntity(event.transaction.from.toHex())
-
-    // Entity fields can be set using simple assignments
-    entity.count = BigInt.fromI32(0)
+export function handleProxyDeployed(event: ProxyDeployed): void {
+  let dao = Dao.load(event.params.contractAddress);
+  if (!dao) {
+    dao = new Dao(event.params.contractAddress);
   }
-
-  // BigInt and BigDecimal math are supported
-  entity.count = entity.count + BigInt.fromI32(1)
-
-  // Entity fields can be set based on event parameters
-  entity.userAddress = event.params.userAddress
-  entity.relayerAddress = event.params.relayerAddress
-
-  // Entities can be written to the store with `.save()`
-  entity.save()
-
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
-
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.getNonce(...)
-  // - contract.isInitialized(...)
-  // - contract.owner(...)
+  REP3TokenTemplate.create(event.params.contractAddress);
+  dao.save();
 }
 
-export function handleOwnershipTransferred(event: OwnershipTransferred): void {}
+export function handleClaim(event: Claim): void {
+  let dao = Dao.load(event.address);
+  if (dao) {
+    let membershipNft = MembershipNFT.load(event.transaction.hash);
+    if (!membershipNft) {
+      membershipNft = new MembershipNFT(event.transaction.hash);
+      membershipNft.tokenID = event.params.tokenId;
+      membershipNft.contractAddress = event.address;
+      membershipNft.save();
+    }
+  }
+}
 
-export function handleProxyDeployed(event: ProxyDeployed): void {}
+export function handleIssue(event: Issue): void {
+  let associationBadges = AssociationBadges.load(event.transaction.hash);
+  if (!associationBadges) {
+    associationBadges = new AssociationBadges(event.transaction.hash);
+    associationBadges.contractAddress = event.address;
+    associationBadges.type = event.params._type;
+  }
+}
