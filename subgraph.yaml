@@ -1,0 +1,29 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Manager
+    network: mumbai
+    source:
+      address: "0xe92429998Eb60bA7B7586277D01941E54Ff92398"
+      abi: Manager
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - MetaTransactionExecuted
+        - OwnershipTransferred
+        - ProxyDeployed
+      abis:
+        - name: Manager
+          file: ./abis/Manager.json
+      eventHandlers:
+        - event: MetaTransactionExecuted(address,address,bytes)
+          handler: handleMetaTransactionExecuted
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: ProxyDeployed(indexed address,indexed string)
+          handler: handleProxyDeployed
+      file: ./src/mapping.ts
