@@ -5,9 +5,9 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ eth-jashan/pocp-v15-mumbai",
-    "create-local": "graph create --node http://localhost:8020/ eth-jashan/pocp-v15-mumbai",
-    "remove-local": "graph remove --node http://localhost:8020/ eth-jashan/pocp-v15-mumbai",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 eth-jashan/pocp-v15-mumbai"
+    "create-local": "graph create --node http://localhost:8020/ eth-jashan/pocpv15-matic",
+    "remove-local": "graph remove --node http://localhost:8020/ eth-jashan/pocpv15-matic",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 eth-jashan/pocpv15-matic"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.29.0",

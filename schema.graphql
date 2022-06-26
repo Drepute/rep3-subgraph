@@ -4,9 +4,15 @@ type Dao @entity {
   symbol: String!
   txHash: Bytes!
   membershipNFT: [MembershipNFT!]! @derivedFrom(field: "contractAddress")
-  totalSupply: BigInt!
+  totalSupply: Int!
   associationBadges: [AssociationBadges!]!
     @derivedFrom(field: "contractAddress")
+  approver: [Approver!]! @derivedFrom(field: "dao")
+}
+
+type Approver @entity {
+  id: Bytes!
+  dao: [Dao!]!
 }
 
 type MembershipNFT @entity {
@@ -15,7 +21,7 @@ type MembershipNFT @entity {
   contractAddress: Dao!
   associateToken: [AssociationBadges!]! @derivedFrom(field: "membershipNFT")
   claimer: Bytes!
-  metadatUri: String!
+  metadataUri: String!
   level: String!
   category: String!
 }

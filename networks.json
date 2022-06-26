@@ -3,5 +3,10 @@
     "Manager": {
       "address": "0xe92429998Eb60bA7B7586277D01941E54Ff92398"
     }
+  },
+  "matic": {
+    "Manager": {
+      "address": "0xE4F44A8ef530aa69C252A553D64f0b070AAF9a0A"
+    }
   }
 }

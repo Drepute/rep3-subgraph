@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Manager
-    network: mumbai
+    network: matic
     source:
-      address: "0xe92429998Eb60bA7B7586277D01941E54Ff92398"
+      address: "0xE4F44A8ef530aa69C252A553D64f0b070AAF9a0A"
       abi: Manager
-      startBlock: 26817717
+      startBlock: 28000000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -25,7 +25,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: REP3Token
-    network: mumbai
+    network: matic
     source:
       abi: REP3Token
     mapping:
@@ -48,5 +48,5 @@ templates:
           handler: handleClaim
         - event: Issue(indexed uint8,indexed uint256)
           handler: handleIssue
-        # - event: ApproverAdded(indexed address)
-        #   handler: handleApproverAdded
+        - event: ApproverAdded(indexed address)
+          handler: handleApproverAdded

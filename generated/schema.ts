@@ -19,7 +19,7 @@ export class Dao extends Entity {
     this.set("name", Value.fromString(""));
     this.set("symbol", Value.fromString(""));
     this.set("txHash", Value.fromBytes(Bytes.empty()));
-    this.set("totalSupply", Value.fromBigInt(BigInt.zero()));
+    this.set("totalSupply", Value.fromI32(0));
   }
 
   save(): void {
@@ -83,13 +83,13 @@ export class Dao extends Entity {
     this.set("membershipNFT", Value.fromBytesArray(value));
   }
 
-  get totalSupply(): BigInt {
+  get totalSupply(): i32 {
     let value = this.get("totalSupply");
-    return value!.toBigInt();
+    return value!.toI32();
   }
 
-  set totalSupply(value: BigInt) {
-    this.set("totalSupply", Value.fromBigInt(value));
+  set totalSupply(value: i32) {
+    this.set("totalSupply", Value.fromI32(value));
   }
 
   get associationBadges(): Array<Bytes> {
@@ -99,6 +99,58 @@ export class Dao extends Entity {
 
   set associationBadges(value: Array<Bytes>) {
     this.set("associationBadges", Value.fromBytesArray(value));
+  }
+
+  get approver(): Array<Bytes> {
+    let value = this.get("approver");
+    return value!.toBytesArray();
+  }
+
+  set approver(value: Array<Bytes>) {
+    this.set("approver", Value.fromBytesArray(value));
+  }
+}
+
+export class Approver extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+
+    this.set("dao", Value.fromBytesArray(new Array(0)));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Approver entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type Approver must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Approver", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static load(id: Bytes): Approver | null {
+    return changetype<Approver | null>(store.get("Approver", id.toHexString()));
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    return value!.toBytes();
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get dao(): Array<Bytes> {
+    let value = this.get("dao");
+    return value!.toBytesArray();
+  }
+
+  set dao(value: Array<Bytes>) {
+    this.set("dao", Value.fromBytesArray(value));
   }
 }
 
@@ -110,7 +162,7 @@ export class MembershipNFT extends Entity {
     this.set("tokenID", Value.fromBigInt(BigInt.zero()));
     this.set("contractAddress", Value.fromBytes(Bytes.empty()));
     this.set("claimer", Value.fromBytes(Bytes.empty()));
-    this.set("metadatUri", Value.fromString(""));
+    this.set("metadataUri", Value.fromString(""));
     this.set("level", Value.fromString(""));
     this.set("category", Value.fromString(""));
   }
@@ -178,13 +230,13 @@ export class MembershipNFT extends Entity {
     this.set("claimer", Value.fromBytes(value));
   }
 
-  get metadatUri(): string {
-    let value = this.get("metadatUri");
+  get metadataUri(): string {
+    let value = this.get("metadataUri");
     return value!.toString();
   }
 
-  set metadatUri(value: string) {
-    this.set("metadatUri", Value.fromString(value));
+  set metadataUri(value: string) {
+    this.set("metadataUri", Value.fromString(value));
   }
 
   get level(): string {

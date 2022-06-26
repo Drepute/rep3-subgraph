@@ -325,36 +325,6 @@ export class REP3Token extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  getChainID(): BigInt {
-    let result = super.call("getChainID", "getChainID():(uint256)", []);
-
-    return result[0].toBigInt();
-  }
-
-  try_getChainID(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("getChainID", "getChainID():(uint256)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  getName(): string {
-    let result = super.call("getName", "getName():(string)", []);
-
-    return result[0].toString();
-  }
-
-  try_getName(): ethereum.CallResult<string> {
-    let result = super.tryCall("getName", "getName():(string)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toString());
-  }
-
   getType(tokenId: BigInt): i32 {
     let result = super.call("getType", "getType(uint256):(uint8)", [
       ethereum.Value.fromUnsignedBigInt(tokenId)
@@ -372,6 +342,29 @@ export class REP3Token extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toI32());
+  }
+
+  getVoucherNonce(): BigInt {
+    let result = super.call(
+      "getVoucherNonce",
+      "getVoucherNonce():(uint32)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getVoucherNonce(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getVoucherNonce",
+      "getVoucherNonce():(uint32)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   isApprovedForAll(owner: Address, operator: Address): boolean {
@@ -681,6 +674,72 @@ export class BatchIssueBadgeCall__Outputs {
   }
 }
 
+export class ClaimBadgeCall extends ethereum.Call {
+  get inputs(): ClaimBadgeCall__Inputs {
+    return new ClaimBadgeCall__Inputs(this);
+  }
+
+  get outputs(): ClaimBadgeCall__Outputs {
+    return new ClaimBadgeCall__Outputs(this);
+  }
+}
+
+export class ClaimBadgeCall__Inputs {
+  _call: ClaimBadgeCall;
+
+  constructor(call: ClaimBadgeCall) {
+    this._call = call;
+  }
+
+  get voucher(): ClaimBadgeCallVoucherStruct {
+    return changetype<ClaimBadgeCallVoucherStruct>(
+      this._call.inputValues[0].value.toTuple()
+    );
+  }
+
+  get memberTokenId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get approvedIndex(): Array<BigInt> {
+    return this._call.inputValues[2].value.toBigIntArray();
+  }
+}
+
+export class ClaimBadgeCall__Outputs {
+  _call: ClaimBadgeCall;
+
+  constructor(call: ClaimBadgeCall) {
+    this._call = call;
+  }
+}
+
+export class ClaimBadgeCallVoucherStruct extends ethereum.Tuple {
+  get index(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get memberTokenIds(): Array<BigInt> {
+    return this[1].toBigIntArray();
+  }
+
+  get type_(): Array<i32> {
+    return this[2].toI32Array();
+  }
+
+  get tokenUri(): string {
+    return this[3].toString();
+  }
+
+  get data(): Array<BigInt> {
+    return this[4].toBigIntArray();
+  }
+
+  get signature(): Bytes {
+    return this[5].toBytes();
+  }
+}
+
 export class ClaimMembershipCall extends ethereum.Call {
   get inputs(): ClaimMembershipCall__Inputs {
     return new ClaimMembershipCall__Inputs(this);
@@ -736,6 +795,36 @@ export class ClaimMembershipCallVoucherStruct extends ethereum.Tuple {
 
   get signature(): Bytes {
     return this[4].toBytes();
+  }
+}
+
+export class GetVoucherNonceCall extends ethereum.Call {
+  get inputs(): GetVoucherNonceCall__Inputs {
+    return new GetVoucherNonceCall__Inputs(this);
+  }
+
+  get outputs(): GetVoucherNonceCall__Outputs {
+    return new GetVoucherNonceCall__Outputs(this);
+  }
+}
+
+export class GetVoucherNonceCall__Inputs {
+  _call: GetVoucherNonceCall;
+
+  constructor(call: GetVoucherNonceCall) {
+    this._call = call;
+  }
+}
+
+export class GetVoucherNonceCall__Outputs {
+  _call: GetVoucherNonceCall;
+
+  constructor(call: GetVoucherNonceCall) {
+    this._call = call;
+  }
+
+  get value0(): BigInt {
+    return this._call.outputValues[0].value.toBigInt();
   }
 }
 
@@ -823,32 +912,6 @@ export class IssueBadgeCall__Outputs {
   }
 }
 
-export class NameSetterCall extends ethereum.Call {
-  get inputs(): NameSetterCall__Inputs {
-    return new NameSetterCall__Inputs(this);
-  }
-
-  get outputs(): NameSetterCall__Outputs {
-    return new NameSetterCall__Outputs(this);
-  }
-}
-
-export class NameSetterCall__Inputs {
-  _call: NameSetterCall;
-
-  constructor(call: NameSetterCall) {
-    this._call = call;
-  }
-}
-
-export class NameSetterCall__Outputs {
-  _call: NameSetterCall;
-
-  constructor(call: NameSetterCall) {
-    this._call = call;
-  }
-}
-
 export class RemoveApproverCall extends ethereum.Call {
   get inputs(): RemoveApproverCall__Inputs {
     return new RemoveApproverCall__Inputs(this);
@@ -875,6 +938,36 @@ export class RemoveApproverCall__Outputs {
   _call: RemoveApproverCall;
 
   constructor(call: RemoveApproverCall) {
+    this._call = call;
+  }
+}
+
+export class RevokeMembershipCall extends ethereum.Call {
+  get inputs(): RevokeMembershipCall__Inputs {
+    return new RevokeMembershipCall__Inputs(this);
+  }
+
+  get outputs(): RevokeMembershipCall__Outputs {
+    return new RevokeMembershipCall__Outputs(this);
+  }
+}
+
+export class RevokeMembershipCall__Inputs {
+  _call: RevokeMembershipCall;
+
+  constructor(call: RevokeMembershipCall) {
+    this._call = call;
+  }
+
+  get tokenId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class RevokeMembershipCall__Outputs {
+  _call: RevokeMembershipCall;
+
+  constructor(call: RevokeMembershipCall) {
     this._call = call;
   }
 }
