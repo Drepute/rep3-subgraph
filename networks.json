@@ -1,12 +1,12 @@
 {
   "mumbai": {
     "Manager": {
-      "address": "0xe92429998Eb60bA7B7586277D01941E54Ff92398"
+      "address": "0xf00eAbb380752fed6414f3C12e3D8F976C7D024d"
     }
   },
   "matic": {
     "Manager": {
-      "address": "0xE4F44A8ef530aa69C252A553D64f0b070AAF9a0A"
+      "address": "0xDA6F4387C344f1312439E05E9f9580882abA6958"
     }
   }
 }

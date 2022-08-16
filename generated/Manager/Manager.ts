@@ -58,6 +58,24 @@ export class OwnershipTransferred__Params {
   }
 }
 
+export class Paused extends ethereum.Event {
+  get params(): Paused__Params {
+    return new Paused__Params(this);
+  }
+}
+
+export class Paused__Params {
+  _event: Paused;
+
+  constructor(event: Paused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class ProxyDeployed extends ethereum.Event {
   get params(): ProxyDeployed__Params {
     return new ProxyDeployed__Params(this);
@@ -77,6 +95,24 @@ export class ProxyDeployed__Params {
 
   get communityName(): Bytes {
     return this._event.parameters[1].value.toBytes();
+  }
+}
+
+export class Unpaused extends ethereum.Event {
+  get params(): Unpaused__Params {
+    return new Unpaused__Params(this);
+  }
+}
+
+export class Unpaused__Params {
+  _event: Unpaused;
+
+  constructor(event: Unpaused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
   }
 }
 
@@ -138,6 +174,21 @@ export class Manager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  paused(): boolean {
+    let result = super.call("paused", "paused():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_paused(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("paused", "paused():(bool)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 }
 
@@ -237,6 +288,62 @@ export class ExecuteMetaTransactionCall__Outputs {
   }
 }
 
+export class MigrateCall extends ethereum.Call {
+  get inputs(): MigrateCall__Inputs {
+    return new MigrateCall__Inputs(this);
+  }
+
+  get outputs(): MigrateCall__Outputs {
+    return new MigrateCall__Outputs(this);
+  }
+}
+
+export class MigrateCall__Inputs {
+  _call: MigrateCall;
+
+  constructor(call: MigrateCall) {
+    this._call = call;
+  }
+
+  get proxyAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class MigrateCall__Outputs {
+  _call: MigrateCall;
+
+  constructor(call: MigrateCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall extends ethereum.Call {
+  get inputs(): PauseCall__Inputs {
+    return new PauseCall__Inputs(this);
+  }
+
+  get outputs(): PauseCall__Outputs {
+    return new PauseCall__Outputs(this);
+  }
+}
+
+export class PauseCall__Inputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall__Outputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
 export class RenounceOwnershipCall extends ethereum.Call {
   get inputs(): RenounceOwnershipCall__Inputs {
     return new RenounceOwnershipCall__Inputs(this);
@@ -289,6 +396,62 @@ export class TransferOwnershipCall__Outputs {
   _call: TransferOwnershipCall;
 
   constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall extends ethereum.Call {
+  get inputs(): UnpauseCall__Inputs {
+    return new UnpauseCall__Inputs(this);
+  }
+
+  get outputs(): UnpauseCall__Outputs {
+    return new UnpauseCall__Outputs(this);
+  }
+}
+
+export class UnpauseCall__Inputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall__Outputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateProxyOwnerCall extends ethereum.Call {
+  get inputs(): UpdateProxyOwnerCall__Inputs {
+    return new UpdateProxyOwnerCall__Inputs(this);
+  }
+
+  get outputs(): UpdateProxyOwnerCall__Outputs {
+    return new UpdateProxyOwnerCall__Outputs(this);
+  }
+}
+
+export class UpdateProxyOwnerCall__Inputs {
+  _call: UpdateProxyOwnerCall;
+
+  constructor(call: UpdateProxyOwnerCall) {
+    this._call = call;
+  }
+
+  get proxyAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class UpdateProxyOwnerCall__Outputs {
+  _call: UpdateProxyOwnerCall;
+
+  constructor(call: UpdateProxyOwnerCall) {
     this._call = call;
   }
 }

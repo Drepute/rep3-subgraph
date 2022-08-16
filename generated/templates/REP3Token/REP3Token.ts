@@ -124,6 +124,32 @@ export class Claim__Params {
   }
 }
 
+export class Upgrade extends ethereum.Event {
+  get params(): Upgrade__Params {
+    return new Upgrade__Params(this);
+  }
+}
+
+export class Upgrade__Params {
+  _event: Upgrade;
+
+  constructor(event: Upgrade) {
+    this._event = event;
+  }
+
+  get level(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+
+  get category(): i32 {
+    return this._event.parameters[1].value.toI32();
+  }
+
+  get tokenId(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -155,12 +181,16 @@ export class Issue__Params {
     this._event = event;
   }
 
+  get memberTokenId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
   get _type(): i32 {
-    return this._event.parameters[0].value.toI32();
+    return this._event.parameters[1].value.toI32();
   }
 
   get tokenId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
+    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -179,6 +209,28 @@ export class NameChange__Params {
 
   get name(): string {
     return this._event.parameters[0].value.toString();
+  }
+}
+
+export class OwnershipTransferred extends ethereum.Event {
+  get params(): OwnershipTransferred__Params {
+    return new OwnershipTransferred__Params(this);
+  }
+}
+
+export class OwnershipTransferred__Params {
+  _event: OwnershipTransferred;
+
+  constructor(event: OwnershipTransferred) {
+    this._event = event;
+  }
+
+  get previousOwner(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newOwner(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 }
 
@@ -302,6 +354,27 @@ export class REP3Token extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  dataSlot(tokenId: BigInt, slot: i32): i32 {
+    let result = super.call("dataSlot", "dataSlot(uint256,uint8):(uint8)", [
+      ethereum.Value.fromUnsignedBigInt(tokenId),
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(slot))
+    ]);
+
+    return result[0].toI32();
+  }
+
+  try_dataSlot(tokenId: BigInt, slot: i32): ethereum.CallResult<i32> {
+    let result = super.tryCall("dataSlot", "dataSlot(uint256,uint8):(uint8)", [
+      ethereum.Value.fromUnsignedBigInt(tokenId),
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(slot))
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
   getApproved(tokenId: BigInt): Address {
@@ -448,6 +521,21 @@ export class REP3Token extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
+  owner(): Address {
+    let result = super.call("owner", "owner():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_owner(): ethereum.CallResult<Address> {
+    let result = super.tryCall("owner", "owner():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   ownerOf(tokenId: BigInt): Address {
@@ -777,8 +865,8 @@ export class ClaimMembershipCall__Outputs {
 }
 
 export class ClaimMembershipCallVoucherStruct extends ethereum.Tuple {
-  get levelCategory(): Array<i32> {
-    return this[0].toI32Array();
+  get data(): Array<BigInt> {
+    return this[0].toBigIntArray();
   }
 
   get end(): Array<i32> {
@@ -912,6 +1000,32 @@ export class IssueBadgeCall__Outputs {
   }
 }
 
+export class MigrateCall extends ethereum.Call {
+  get inputs(): MigrateCall__Inputs {
+    return new MigrateCall__Inputs(this);
+  }
+
+  get outputs(): MigrateCall__Outputs {
+    return new MigrateCall__Outputs(this);
+  }
+}
+
+export class MigrateCall__Inputs {
+  _call: MigrateCall;
+
+  constructor(call: MigrateCall) {
+    this._call = call;
+  }
+}
+
+export class MigrateCall__Outputs {
+  _call: MigrateCall;
+
+  constructor(call: MigrateCall) {
+    this._call = call;
+  }
+}
+
 export class RemoveApproverCall extends ethereum.Call {
   get inputs(): RemoveApproverCall__Inputs {
     return new RemoveApproverCall__Inputs(this);
@@ -938,6 +1052,32 @@ export class RemoveApproverCall__Outputs {
   _call: RemoveApproverCall;
 
   constructor(call: RemoveApproverCall) {
+    this._call = call;
+  }
+}
+
+export class RenounceOwnershipCall extends ethereum.Call {
+  get inputs(): RenounceOwnershipCall__Inputs {
+    return new RenounceOwnershipCall__Inputs(this);
+  }
+
+  get outputs(): RenounceOwnershipCall__Outputs {
+    return new RenounceOwnershipCall__Outputs(this);
+  }
+}
+
+export class RenounceOwnershipCall__Inputs {
+  _call: RenounceOwnershipCall;
+
+  constructor(call: RenounceOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class RenounceOwnershipCall__Outputs {
+  _call: RenounceOwnershipCall;
+
+  constructor(call: RenounceOwnershipCall) {
     this._call = call;
   }
 }
@@ -1170,6 +1310,36 @@ export class TransferFromCall__Outputs {
   }
 }
 
+export class TransferOwnershipCall extends ethereum.Call {
+  get inputs(): TransferOwnershipCall__Inputs {
+    return new TransferOwnershipCall__Inputs(this);
+  }
+
+  get outputs(): TransferOwnershipCall__Outputs {
+    return new TransferOwnershipCall__Outputs(this);
+  }
+}
+
+export class TransferOwnershipCall__Inputs {
+  _call: TransferOwnershipCall;
+
+  constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+
+  get newOwner(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class TransferOwnershipCall__Outputs {
+  _call: TransferOwnershipCall;
+
+  constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
 export class UpdateMembershipCall extends ethereum.Call {
   get inputs(): UpdateMembershipCall__Inputs {
     return new UpdateMembershipCall__Inputs(this);
@@ -1191,8 +1361,8 @@ export class UpdateMembershipCall__Inputs {
     return this._call.inputValues[0].value.toBigInt();
   }
 
-  get levelCategory(): i32 {
-    return this._call.inputValues[1].value.toI32();
+  get data(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
   }
 
   get tokenUri(): string {

@@ -19,7 +19,9 @@ export class Dao extends Entity {
     this.set("name", Value.fromString(""));
     this.set("symbol", Value.fromString(""));
     this.set("txHash", Value.fromBytes(Bytes.empty()));
+    this.set("NFTHashes", Value.fromBytesArray(new Array(0)));
     this.set("totalSupply", Value.fromI32(0));
+    this.set("approver", Value.fromBytesArray(new Array(0)));
   }
 
   save(): void {
@@ -74,6 +76,15 @@ export class Dao extends Entity {
     this.set("txHash", Value.fromBytes(value));
   }
 
+  get NFTHashes(): Array<Bytes> {
+    let value = this.get("NFTHashes");
+    return value!.toBytesArray();
+  }
+
+  set NFTHashes(value: Array<Bytes>) {
+    this.set("NFTHashes", Value.fromBytesArray(value));
+  }
+
   get membershipNFT(): Array<Bytes> {
     let value = this.get("membershipNFT");
     return value!.toBytesArray();
@@ -92,13 +103,13 @@ export class Dao extends Entity {
     this.set("totalSupply", Value.fromI32(value));
   }
 
-  get associationBadges(): Array<Bytes> {
-    let value = this.get("associationBadges");
-    return value!.toBytesArray();
+  get associationBadge(): Array<string> {
+    let value = this.get("associationBadge");
+    return value!.toStringArray();
   }
 
-  set associationBadges(value: Array<Bytes>) {
-    this.set("associationBadges", Value.fromBytesArray(value));
+  set associationBadge(value: Array<string>) {
+    this.set("associationBadge", Value.fromStringArray(value));
   }
 
   get approver(): Array<Bytes> {
@@ -116,6 +127,7 @@ export class Approver extends Entity {
     super();
     this.set("id", Value.fromBytes(id));
 
+    this.set("address", Value.fromBytes(Bytes.empty()));
     this.set("dao", Value.fromBytesArray(new Array(0)));
   }
 
@@ -144,6 +156,15 @@ export class Approver extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
+  get address(): Bytes {
+    let value = this.get("address");
+    return value!.toBytes();
+  }
+
+  set address(value: Bytes) {
+    this.set("address", Value.fromBytes(value));
+  }
+
   get dao(): Array<Bytes> {
     let value = this.get("dao");
     return value!.toBytesArray();
@@ -161,6 +182,7 @@ export class MembershipNFT extends Entity {
 
     this.set("tokenID", Value.fromBigInt(BigInt.zero()));
     this.set("contractAddress", Value.fromBytes(Bytes.empty()));
+    this.set("time", Value.fromBigInt(BigInt.zero()));
     this.set("claimer", Value.fromBytes(Bytes.empty()));
     this.set("metadataUri", Value.fromString(""));
     this.set("level", Value.fromString(""));
@@ -212,13 +234,13 @@ export class MembershipNFT extends Entity {
     this.set("contractAddress", Value.fromBytes(value));
   }
 
-  get associateToken(): Array<Bytes> {
-    let value = this.get("associateToken");
-    return value!.toBytesArray();
+  get time(): BigInt {
+    let value = this.get("time");
+    return value!.toBigInt();
   }
 
-  set associateToken(value: Array<Bytes>) {
-    this.set("associateToken", Value.fromBytesArray(value));
+  set time(value: BigInt) {
+    this.set("time", Value.fromBigInt(value));
   }
 
   get claimer(): Bytes {
@@ -258,44 +280,45 @@ export class MembershipNFT extends Entity {
   }
 }
 
-export class AssociationBadges extends Entity {
-  constructor(id: Bytes) {
+export class AssociationBadge extends Entity {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
 
     this.set("tokenID", Value.fromBigInt(BigInt.zero()));
     this.set("contractAddress", Value.fromBytes(Bytes.empty()));
-    this.set("membershipNFT", Value.fromBytes(Bytes.empty()));
+    this.set("membershipId", Value.fromBigInt(BigInt.zero()));
     this.set("type", Value.fromI32(0));
     this.set("metadatUri", Value.fromString(""));
     this.set("claimer", Value.fromBytes(Bytes.empty()));
+    this.set("txHash", Value.fromBytes(Bytes.empty()));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save AssociationBadges entity without an ID");
+    assert(id != null, "Cannot save AssociationBadge entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type AssociationBadges must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.STRING,
+        `Entities of type AssociationBadge must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("AssociationBadges", id.toBytes().toHexString(), this);
+      store.set("AssociationBadge", id.toString(), this);
     }
   }
 
-  static load(id: Bytes): AssociationBadges | null {
-    return changetype<AssociationBadges | null>(
-      store.get("AssociationBadges", id.toHexString())
+  static load(id: string): AssociationBadge | null {
+    return changetype<AssociationBadge | null>(
+      store.get("AssociationBadge", id)
     );
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
-    return value!.toBytes();
+    return value!.toString();
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
   get tokenID(): BigInt {
@@ -316,13 +339,13 @@ export class AssociationBadges extends Entity {
     this.set("contractAddress", Value.fromBytes(value));
   }
 
-  get membershipNFT(): Bytes {
-    let value = this.get("membershipNFT");
-    return value!.toBytes();
+  get membershipId(): BigInt {
+    let value = this.get("membershipId");
+    return value!.toBigInt();
   }
 
-  set membershipNFT(value: Bytes) {
-    this.set("membershipNFT", Value.fromBytes(value));
+  set membershipId(value: BigInt) {
+    this.set("membershipId", Value.fromBigInt(value));
   }
 
   get type(): i32 {
@@ -350,5 +373,14 @@ export class AssociationBadges extends Entity {
 
   set claimer(value: Bytes) {
     this.set("claimer", Value.fromBytes(value));
+  }
+
+  get txHash(): Bytes {
+    let value = this.get("txHash");
+    return value!.toBytes();
+  }
+
+  set txHash(value: Bytes) {
+    this.set("txHash", Value.fromBytes(value));
   }
 }

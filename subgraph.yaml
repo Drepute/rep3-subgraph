@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Manager
-    network: matic
+    network: mumbai
     source:
-      address: "0xE4F44A8ef530aa69C252A553D64f0b070AAF9a0A"
+      address: "0xf00eAbb380752fed6414f3C12e3D8F976C7D024d"
       abi: Manager
-      startBlock: 28000000
+      startBlock: 26927985
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -25,7 +25,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: REP3Token
-    network: matic
+    network: mumbai
     source:
       abi: REP3Token
     mapping:
@@ -36,8 +36,9 @@ templates:
       entities:
         - Dao
         - MembershipNFT
-        - AssociationBadges
+        - AssociationBadge
         - Approver
+        - UpgradeNft
       abis:
         - name: REP3Token
           file: ./abis/REP3Token.json
@@ -46,7 +47,9 @@ templates:
       eventHandlers:
         - event: Claim(indexed uint8,indexed uint8,indexed uint256)
           handler: handleClaim
-        - event: Issue(indexed uint8,indexed uint256)
+        - event: Issue(indexed uint256,indexed uint8,indexed uint256)
           handler: handleIssue
         - event: ApproverAdded(indexed address)
           handler: handleApproverAdded
+        - event: Upgrade(indexed uint8,indexed uint8,indexed uint256)
+          handler: handleUpgrade
