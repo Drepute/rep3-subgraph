@@ -291,6 +291,7 @@ export class AssociationBadge extends Entity {
     this.set("type", Value.fromI32(0));
     this.set("metadatUri", Value.fromString(""));
     this.set("claimer", Value.fromBytes(Bytes.empty()));
+    this.set("time", Value.fromBigInt(BigInt.zero()));
     this.set("txHash", Value.fromBytes(Bytes.empty()));
   }
 
@@ -373,6 +374,15 @@ export class AssociationBadge extends Entity {
 
   set claimer(value: Bytes) {
     this.set("claimer", Value.fromBytes(value));
+  }
+
+  get time(): BigInt {
+    let value = this.get("time");
+    return value!.toBigInt();
+  }
+
+  set time(value: BigInt) {
+    this.set("time", Value.fromBigInt(value));
   }
 
   get txHash(): Bytes {

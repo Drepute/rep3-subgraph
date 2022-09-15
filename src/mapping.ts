@@ -5,6 +5,8 @@ import {
   REP3Token,
   ApproverAdded,
   Upgrade,
+  MembershipTokenChange,
+  ApproverRemoved,
 } from "../generated/templates/REP3Token/REP3Token";
 import { AssociationBadge, Dao, MembershipNFT } from "../generated/schema";
 import { REP3Token as REP3TokenTemplate } from "../generated/templates";
@@ -17,20 +19,28 @@ export function handleProxyDeployed(event: ProxyDeployed): void {
     dao.name = "";
     dao.totalSupply = 0;
   }
-
   REP3TokenTemplate.create(event.params.contractAddress);
-
   dao.save();
 }
 
 export function handleApproverAdded(event: ApproverAdded): void {
   let proxyDao = Dao.load(event.address);
-
   if (proxyDao) {
     let approvers = proxyDao.approver;
     approvers.push(event.params.approver);
     proxyDao.approver = approvers;
-    proxyDao.save;
+    proxyDao.save();
+  }
+}
+
+export function handleApproveRemoved(event: ApproverRemoved): void {
+  let proxyDao = Dao.load(event.address);
+  if (proxyDao) {
+    let approvers = proxyDao.approver;
+    const index = approvers.indexOf(event.params.approver);
+    approvers.splice(index, 1);
+    proxyDao.approver = approvers;
+    proxyDao.save();
   }
 }
 
@@ -103,5 +113,26 @@ export function handleIssue(event: Issue): void {
       associationBadges.save();
       dao.save();
     }
+  }
+}
+
+export function handleMembershipTokenChange(
+  event: MembershipTokenChange
+): void {
+  let dao = Dao.load(event.address);
+  if (dao) {
+    let membershipNft = MembershipNFT.load(event.transaction.hash);
+    if (!membershipNft) {
+      membershipNft = new MembershipNFT(event.transaction.hash);
+      const proxyContract = REP3Token.bind(event.address);
+      membershipNft.tokenID = event.params.tokenId;
+      membershipNft.contractAddress = event.address;
+      membershipNft.level = event.params.level.toString();
+      membershipNft.category = event.params.category.toString();
+      membershipNft.claimer = proxyContract.ownerOf(event.params.tokenId);
+      membershipNft.time = event.block.timestamp;
+      membershipNft.metadataUri = proxyContract.tokenURI(event.params.tokenId);
+    }
+    membershipNft.save();
   }
 }

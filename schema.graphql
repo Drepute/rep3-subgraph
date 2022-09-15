@@ -35,5 +35,6 @@ type AssociationBadge @entity {
   type: Int!
   metadatUri: String!
   claimer: Bytes!
+  time: BigInt!
   txHash: Bytes!
 }

@@ -124,32 +124,6 @@ export class Claim__Params {
   }
 }
 
-export class Upgrade extends ethereum.Event {
-  get params(): Upgrade__Params {
-    return new Upgrade__Params(this);
-  }
-}
-
-export class Upgrade__Params {
-  _event: Upgrade;
-
-  constructor(event: Upgrade) {
-    this._event = event;
-  }
-
-  get level(): i32 {
-    return this._event.parameters[0].value.toI32();
-  }
-
-  get category(): i32 {
-    return this._event.parameters[1].value.toI32();
-  }
-
-  get tokenId(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-}
-
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -191,6 +165,36 @@ export class Issue__Params {
 
   get tokenId(): BigInt {
     return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class MembershipTokenChange extends ethereum.Event {
+  get params(): MembershipTokenChange__Params {
+    return new MembershipTokenChange__Params(this);
+  }
+}
+
+export class MembershipTokenChange__Params {
+  _event: MembershipTokenChange;
+
+  constructor(event: MembershipTokenChange) {
+    this._event = event;
+  }
+
+  get tokenId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get tokenURI(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get level(): i32 {
+    return this._event.parameters[2].value.toI32();
+  }
+
+  get category(): i32 {
+    return this._event.parameters[3].value.toI32();
   }
 }
 
@@ -279,6 +283,32 @@ export class Transfer__Params {
 
   get to(): Address {
     return this._event.parameters[1].value.toAddress();
+  }
+
+  get tokenId(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class Upgrade extends ethereum.Event {
+  get params(): Upgrade__Params {
+    return new Upgrade__Params(this);
+  }
+}
+
+export class Upgrade__Params {
+  _event: Upgrade;
+
+  constructor(event: Upgrade) {
+    this._event = event;
+  }
+
+  get level(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+
+  get category(): i32 {
+    return this._event.parameters[1].value.toI32();
   }
 
   get tokenId(): BigInt {
@@ -417,21 +447,21 @@ export class REP3Token extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
-  getVoucherNonce(): BigInt {
+  getVoucherNonce(memberTokenId: BigInt): BigInt {
     let result = super.call(
       "getVoucherNonce",
-      "getVoucherNonce():(uint32)",
-      []
+      "getVoucherNonce(uint256):(uint32)",
+      [ethereum.Value.fromUnsignedBigInt(memberTokenId)]
     );
 
     return result[0].toBigInt();
   }
 
-  try_getVoucherNonce(): ethereum.CallResult<BigInt> {
+  try_getVoucherNonce(memberTokenId: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "getVoucherNonce",
-      "getVoucherNonce():(uint32)",
-      []
+      "getVoucherNonce(uint256):(uint32)",
+      [ethereum.Value.fromUnsignedBigInt(memberTokenId)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -762,6 +792,40 @@ export class BatchIssueBadgeCall__Outputs {
   }
 }
 
+export class ChangeApproverCall extends ethereum.Call {
+  get inputs(): ChangeApproverCall__Inputs {
+    return new ChangeApproverCall__Inputs(this);
+  }
+
+  get outputs(): ChangeApproverCall__Outputs {
+    return new ChangeApproverCall__Outputs(this);
+  }
+}
+
+export class ChangeApproverCall__Inputs {
+  _call: ChangeApproverCall;
+
+  constructor(call: ChangeApproverCall) {
+    this._call = call;
+  }
+
+  get approverToAdd(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
+  }
+
+  get approversToRemove(): Array<Address> {
+    return this._call.inputValues[1].value.toAddressArray();
+  }
+}
+
+export class ChangeApproverCall__Outputs {
+  _call: ChangeApproverCall;
+
+  constructor(call: ChangeApproverCall) {
+    this._call = call;
+  }
+}
+
 export class ClaimBadgeCall extends ethereum.Call {
   get inputs(): ClaimBadgeCall__Inputs {
     return new ClaimBadgeCall__Inputs(this);
@@ -823,8 +887,12 @@ export class ClaimBadgeCallVoucherStruct extends ethereum.Tuple {
     return this[4].toBigIntArray();
   }
 
+  get nonces(): Array<BigInt> {
+    return this[5].toBigIntArray();
+  }
+
   get signature(): Bytes {
-    return this[5].toBytes();
+    return this[6].toBytes();
   }
 }
 
@@ -883,36 +951,6 @@ export class ClaimMembershipCallVoucherStruct extends ethereum.Tuple {
 
   get signature(): Bytes {
     return this[4].toBytes();
-  }
-}
-
-export class GetVoucherNonceCall extends ethereum.Call {
-  get inputs(): GetVoucherNonceCall__Inputs {
-    return new GetVoucherNonceCall__Inputs(this);
-  }
-
-  get outputs(): GetVoucherNonceCall__Outputs {
-    return new GetVoucherNonceCall__Outputs(this);
-  }
-}
-
-export class GetVoucherNonceCall__Inputs {
-  _call: GetVoucherNonceCall;
-
-  constructor(call: GetVoucherNonceCall) {
-    this._call = call;
-  }
-}
-
-export class GetVoucherNonceCall__Outputs {
-  _call: GetVoucherNonceCall;
-
-  constructor(call: GetVoucherNonceCall) {
-    this._call = call;
-  }
-
-  get value0(): BigInt {
-    return this._call.outputValues[0].value.toBigInt();
   }
 }
 
@@ -996,6 +1034,78 @@ export class IssueBadgeCall__Outputs {
   _call: IssueBadgeCall;
 
   constructor(call: IssueBadgeCall) {
+    this._call = call;
+  }
+}
+
+export class IssueMembershipCall extends ethereum.Call {
+  get inputs(): IssueMembershipCall__Inputs {
+    return new IssueMembershipCall__Inputs(this);
+  }
+
+  get outputs(): IssueMembershipCall__Outputs {
+    return new IssueMembershipCall__Outputs(this);
+  }
+}
+
+export class IssueMembershipCall__Inputs {
+  _call: IssueMembershipCall;
+
+  constructor(call: IssueMembershipCall) {
+    this._call = call;
+  }
+
+  get to(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
+  }
+
+  get data(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get tokenUri(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+}
+
+export class IssueMembershipCall__Outputs {
+  _call: IssueMembershipCall;
+
+  constructor(call: IssueMembershipCall) {
+    this._call = call;
+  }
+}
+
+export class MembershipURIChangeCall extends ethereum.Call {
+  get inputs(): MembershipURIChangeCall__Inputs {
+    return new MembershipURIChangeCall__Inputs(this);
+  }
+
+  get outputs(): MembershipURIChangeCall__Outputs {
+    return new MembershipURIChangeCall__Outputs(this);
+  }
+}
+
+export class MembershipURIChangeCall__Inputs {
+  _call: MembershipURIChangeCall;
+
+  constructor(call: MembershipURIChangeCall) {
+    this._call = call;
+  }
+
+  get tokenId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get tokenUri(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+}
+
+export class MembershipURIChangeCall__Outputs {
+  _call: MembershipURIChangeCall;
+
+  constructor(call: MembershipURIChangeCall) {
     this._call = call;
   }
 }

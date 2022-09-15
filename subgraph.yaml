@@ -4,7 +4,7 @@ schema:
 dataSources:
   - kind: ethereum
     name: Manager
-    network: mumbai
+    network: matic
     source:
       address: "0xf00eAbb380752fed6414f3C12e3D8F976C7D024d"
       abi: Manager
@@ -25,7 +25,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: REP3Token
-    network: mumbai
+    network: matic
     source:
       abi: REP3Token
     mapping:
@@ -39,6 +39,7 @@ templates:
         - AssociationBadge
         - Approver
         - UpgradeNft
+        - MembershipTokenChange
       abis:
         - name: REP3Token
           file: ./abis/REP3Token.json
@@ -53,3 +54,7 @@ templates:
           handler: handleApproverAdded
         - event: Upgrade(indexed uint8,indexed uint8,indexed uint256)
           handler: handleUpgrade
+        - event: MembershipTokenChange(uint256,string,indexed uint8,indexed uint8)
+          handler: handleMembershipTokenChange
+        - event: ApproverRemoved(indexed address)
+          handler: handleApproveRemoved

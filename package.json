@@ -4,7 +4,8 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ eth-jashan/rep3-mumbai",
+    "deploy:mumbai": "graph deploy --node https://api.thegraph.com/deploy/ eth-jashan/rep3-mumbai",
+    "deploy:matic": "graph deploy --node https://api.thegraph.com/deploy/ eth-jashan/rep3-matic",
     "create-local": "graph create --node http://localhost:3000/ eth-jashan/rep3-matic",
     "remove-local": "graph remove --node http://localhost:3000/ eth-jashan/rep3-matic",
     "deploy-local": "graph deploy --node http://localhost:3000/ --ipfs http://localhost:5001 eth-jashan/pocpv15-matic"
