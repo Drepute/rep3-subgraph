@@ -47,14 +47,18 @@ export function handleApproveRemoved(event: ApproverRemoved): void {
 export function handleClaim(event: Claim): void {
   let dao = Dao.load(event.address);
   if (dao) {
-    let membershipNft = MembershipNFT.load(event.transaction.hash);
+    let membershipNft = MembershipNFT.load(
+      `${event.transaction.hash.toHexString()}${event.params.tokenId}`
+    );
     let nftHashes = dao.NFTHashes;
     nftHashes.push(event.transaction.hash);
     dao.NFTHashes = nftHashes;
     dao.save();
     if (!membershipNft) {
       const proxyContract = REP3Token.bind(event.address);
-      membershipNft = new MembershipNFT(event.transaction.hash);
+      membershipNft = new MembershipNFT(
+        `${event.transaction.hash.toHexString()}${event.params.tokenId}`
+      );
       membershipNft.tokenID = event.params.tokenId;
       membershipNft.contractAddress = event.address;
       membershipNft.level = event.params.level.toString();
@@ -62,6 +66,7 @@ export function handleClaim(event: Claim): void {
       membershipNft.claimer = proxyContract.ownerOf(event.params.tokenId);
       membershipNft.metadataUri = proxyContract.tokenURI(event.params.tokenId);
       membershipNft.time = event.block.timestamp;
+      membershipNft.txHash = event.transaction.hash;
       let totalSupply = dao.totalSupply;
       dao.totalSupply = totalSupply + 1;
       membershipNft.save();
@@ -72,9 +77,13 @@ export function handleClaim(event: Claim): void {
 export function handleUpgrade(event: Upgrade): void {
   let dao = Dao.load(event.address);
   if (dao) {
-    let membershipNft = MembershipNFT.load(event.transaction.hash);
+    let membershipNft = MembershipNFT.load(
+      `${event.transaction.hash.toHexString()}${event.params.tokenId}`
+    );
     if (!membershipNft) {
-      membershipNft = new MembershipNFT(event.transaction.hash);
+      membershipNft = new MembershipNFT(
+        `${event.transaction.hash.toHexString()}${event.params.tokenId}`
+      );
       const proxyContract = REP3Token.bind(event.address);
       membershipNft.tokenID = event.params.tokenId;
       membershipNft.contractAddress = event.address;
@@ -83,6 +92,7 @@ export function handleUpgrade(event: Upgrade): void {
       membershipNft.claimer = proxyContract.ownerOf(event.params.tokenId);
       membershipNft.time = event.block.timestamp;
       membershipNft.metadataUri = proxyContract.tokenURI(event.params.tokenId);
+      membershipNft.txHash = event.transaction.hash;
     }
     membershipNft.save();
   }
@@ -121,9 +131,13 @@ export function handleMembershipTokenChange(
 ): void {
   let dao = Dao.load(event.address);
   if (dao) {
-    let membershipNft = MembershipNFT.load(event.transaction.hash);
+    let membershipNft = MembershipNFT.load(
+      `${event.transaction.hash.toHexString()}${event.params.tokenId}`
+    );
     if (!membershipNft) {
-      membershipNft = new MembershipNFT(event.transaction.hash);
+      membershipNft = new MembershipNFT(
+        `${event.transaction.hash.toHexString()}${event.params.tokenId}`
+      );
       const proxyContract = REP3Token.bind(event.address);
       membershipNft.tokenID = event.params.tokenId;
       membershipNft.contractAddress = event.address;
@@ -132,7 +146,50 @@ export function handleMembershipTokenChange(
       membershipNft.claimer = proxyContract.ownerOf(event.params.tokenId);
       membershipNft.time = event.block.timestamp;
       membershipNft.metadataUri = proxyContract.tokenURI(event.params.tokenId);
+      membershipNft.txHash = event.transaction.hash;
     }
     membershipNft.save();
   }
 }
+
+// import { Deposit, Withdraw } from "../generated/ERC1967Proxy/ERC1967Proxy";
+// import { BigInt } from "@graphprotocol/graph-ts";
+// import { User } from "../generated/schema";
+
+// export function handleDeposit(event: Deposit): void {
+//   let user = User.load(event.params.user);
+//   if (!user) {
+//     user = new User(event.params.user);
+//     user.amount = event.params.amount;
+//     let pids: string[] = [];
+//     pids.push(event.params.pid.toString());
+//     user.pid = pids;
+//     user.startTime = event.block.timestamp;
+//     user.save();
+//   } else {
+//     if (!user.pid.includes(event.params.pid.toString())) {
+//       let pids = user.pid;
+//       pids.push(event.params.pid.toString());
+//       user.pid = pids;
+//     }
+//     user.amount = user.amount.plus(user.amount);
+//     user.save();
+//   }
+// }
+
+// export function handleWithdraw(event: Withdraw): void {
+//   let user = User.load(event.params.user);
+//   if (user) {
+//     if (!user.pid.includes(event.params.pid.toString())) {
+//       let pids = user.pid;
+//       pids.push(event.params.pid.toString());
+//       user.pid = pids;
+//     }
+//     user.amount = user.amount.minus(user.amount);
+//     const currentBalance = user.amount;
+//     // if (currentBalance.toString() === "0") {
+//     user.endTime = event.block.timestamp;
+//     // }
+//     user.save();
+//   }
+// }

@@ -85,13 +85,13 @@ export class Dao extends Entity {
     this.set("NFTHashes", Value.fromBytesArray(value));
   }
 
-  get membershipNFT(): Array<Bytes> {
+  get membershipNFT(): Array<string> {
     let value = this.get("membershipNFT");
-    return value!.toBytesArray();
+    return value!.toStringArray();
   }
 
-  set membershipNFT(value: Array<Bytes>) {
-    this.set("membershipNFT", Value.fromBytesArray(value));
+  set membershipNFT(value: Array<string>) {
+    this.set("membershipNFT", Value.fromStringArray(value));
   }
 
   get totalSupply(): i32 {
@@ -176,9 +176,9 @@ export class Approver extends Entity {
 }
 
 export class MembershipNFT extends Entity {
-  constructor(id: Bytes) {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
 
     this.set("tokenID", Value.fromBigInt(BigInt.zero()));
     this.set("contractAddress", Value.fromBytes(Bytes.empty()));
@@ -194,26 +194,41 @@ export class MembershipNFT extends Entity {
     assert(id != null, "Cannot save MembershipNFT entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type MembershipNFT must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.STRING,
+        `Entities of type MembershipNFT must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("MembershipNFT", id.toBytes().toHexString(), this);
+      store.set("MembershipNFT", id.toString(), this);
     }
   }
 
-  static load(id: Bytes): MembershipNFT | null {
-    return changetype<MembershipNFT | null>(
-      store.get("MembershipNFT", id.toHexString())
-    );
+  static load(id: string): MembershipNFT | null {
+    return changetype<MembershipNFT | null>(store.get("MembershipNFT", id));
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
-    return value!.toBytes();
+    return value!.toString();
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get txHash(): Bytes | null {
+    let value = this.get("txHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set txHash(value: Bytes | null) {
+    if (!value) {
+      this.unset("txHash");
+    } else {
+      this.set("txHash", Value.fromBytes(<Bytes>value));
+    }
   }
 
   get tokenID(): BigInt {

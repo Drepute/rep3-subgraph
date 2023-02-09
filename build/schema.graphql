@@ -17,7 +17,8 @@ type Approver @entity {
 }
 
 type MembershipNFT @entity {
-  id: Bytes!
+  id: String!
+  txHash: Bytes
   tokenID: BigInt!
   contractAddress: Dao!
   time: BigInt!

@@ -6,9 +6,9 @@ dataSources:
     name: Manager
     network: matic
     source:
-      address: "0xf00eAbb380752fed6414f3C12e3D8F976C7D024d"
+      address: "0xDA6F4387C344f1312439E05E9f9580882abA6958"
       abi: Manager
-      startBlock: 26927985
+      startBlock: 30057235
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
