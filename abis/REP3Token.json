@@ -136,6 +136,12 @@
       {
         "indexed": true,
         "internalType": "uint256",
+        "name": "data",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
       }

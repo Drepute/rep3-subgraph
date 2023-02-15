@@ -308,6 +308,7 @@ export class AssociationBadge extends Entity {
     this.set("claimer", Value.fromBytes(Bytes.empty()));
     this.set("time", Value.fromBigInt(BigInt.zero()));
     this.set("txHash", Value.fromBytes(Bytes.empty()));
+    this.set("data", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -407,5 +408,14 @@ export class AssociationBadge extends Entity {
 
   set txHash(value: Bytes) {
     this.set("txHash", Value.fromBytes(value));
+  }
+
+  get data(): BigInt {
+    let value = this.get("data");
+    return value!.toBigInt();
+  }
+
+  set data(value: BigInt) {
+    this.set("data", Value.fromBigInt(value));
   }
 }

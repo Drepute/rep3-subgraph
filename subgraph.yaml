@@ -48,7 +48,7 @@ templates:
       eventHandlers:
         - event: Claim(indexed uint8,indexed uint8,indexed uint256)
           handler: handleClaim
-        - event: Issue(indexed uint256,indexed uint8,indexed uint256)
+        - event: Issue(indexed uint256,indexed uint8,indexed uint256,indexed uint256)
           handler: handleIssue
         - event: ApproverAdded(indexed address)
           handler: handleApproverAdded
