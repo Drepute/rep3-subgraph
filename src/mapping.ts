@@ -121,6 +121,7 @@ export function handleIssue(event: Issue): void {
       associationBadges.txHash = event.transaction.hash;
       associationBadges.claimer = proxyContract.ownerOf(event.params.tokenId);
       associationBadges.data = event.params.data;
+      associationBadges.time = event.block.timestamp;
       associationBadges.save();
       dao.save();
     }
