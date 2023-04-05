@@ -163,12 +163,8 @@ export class Issue__Params {
     return this._event.parameters[1].value.toI32();
   }
 
-  get data(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
   get tokenId(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
+    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -348,40 +344,17 @@ export class REP3Token extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
-  _stringToArray(uriString: string): Array<string> {
-    let result = super.call(
-      "_stringToArray",
-      "_stringToArray(string):(string[])",
-      [ethereum.Value.fromString(uriString)]
-    );
-
-    return result[0].toStringArray();
-  }
-
-  try__stringToArray(uriString: string): ethereum.CallResult<Array<string>> {
-    let result = super.tryCall(
-      "_stringToArray",
-      "_stringToArray(string):(string[])",
-      [ethereum.Value.fromString(uriString)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toStringArray());
-  }
-
-  balanceOf(owner: Address): BigInt {
+  balanceOf(account: Address): BigInt {
     let result = super.call("balanceOf", "balanceOf(address):(uint256)", [
-      ethereum.Value.fromAddress(owner)
+      ethereum.Value.fromAddress(account)
     ]);
 
     return result[0].toBigInt();
   }
 
-  try_balanceOf(owner: Address): ethereum.CallResult<BigInt> {
+  try_balanceOf(account: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall("balanceOf", "balanceOf(address):(uint256)", [
-      ethereum.Value.fromAddress(owner)
+      ethereum.Value.fromAddress(account)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -430,6 +403,27 @@ export class REP3Token extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  getTokenData(tokenId: BigInt): BigInt {
+    let result = super.call("getTokenData", "getTokenData(uint256):(uint256)", [
+      ethereum.Value.fromUnsignedBigInt(tokenId)
+    ]);
+
+    return result[0].toBigInt();
+  }
+
+  try_getTokenData(tokenId: BigInt): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getTokenData",
+      "getTokenData(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   getType(tokenId: BigInt): i32 {
@@ -519,21 +513,62 @@ export class REP3Token extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  isTrustedForwarder(forwarder: Address): boolean {
+  membershipExists(account: Address, levelCategory: i32): boolean {
     let result = super.call(
-      "isTrustedForwarder",
-      "isTrustedForwarder(address):(bool)",
-      [ethereum.Value.fromAddress(forwarder)]
+      "membershipExists",
+      "membershipExists(address,uint16):(bool)",
+      [
+        ethereum.Value.fromAddress(account),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(levelCategory))
+      ]
     );
 
     return result[0].toBoolean();
   }
 
-  try_isTrustedForwarder(forwarder: Address): ethereum.CallResult<boolean> {
+  try_membershipExists(
+    account: Address,
+    levelCategory: i32
+  ): ethereum.CallResult<boolean> {
     let result = super.tryCall(
-      "isTrustedForwarder",
-      "isTrustedForwarder(address):(bool)",
-      [ethereum.Value.fromAddress(forwarder)]
+      "membershipExists",
+      "membershipExists(address,uint16):(bool)",
+      [
+        ethereum.Value.fromAddress(account),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(levelCategory))
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  membershipLevelExists(account: Address, level: i32): boolean {
+    let result = super.call(
+      "membershipLevelExists",
+      "membershipLevelExists(address,uint8):(bool)",
+      [
+        ethereum.Value.fromAddress(account),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(level))
+      ]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_membershipLevelExists(
+    account: Address,
+    level: i32
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "membershipLevelExists",
+      "membershipLevelExists(address,uint8):(bool)",
+      [
+        ethereum.Value.fromAddress(account),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(level))
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -754,6 +789,36 @@ export class ApproveCall__Outputs {
   }
 }
 
+export class BatchBurnBadgeCall extends ethereum.Call {
+  get inputs(): BatchBurnBadgeCall__Inputs {
+    return new BatchBurnBadgeCall__Inputs(this);
+  }
+
+  get outputs(): BatchBurnBadgeCall__Outputs {
+    return new BatchBurnBadgeCall__Outputs(this);
+  }
+}
+
+export class BatchBurnBadgeCall__Inputs {
+  _call: BatchBurnBadgeCall;
+
+  constructor(call: BatchBurnBadgeCall) {
+    this._call = call;
+  }
+
+  get badgeTokenIds(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
+  }
+}
+
+export class BatchBurnBadgeCall__Outputs {
+  _call: BatchBurnBadgeCall;
+
+  constructor(call: BatchBurnBadgeCall) {
+    this._call = call;
+  }
+}
+
 export class BatchIssueBadgeCall extends ethereum.Call {
   get inputs(): BatchIssueBadgeCall__Inputs {
     return new BatchIssueBadgeCall__Inputs(this);
@@ -792,6 +857,108 @@ export class BatchIssueBadgeCall__Outputs {
   _call: BatchIssueBadgeCall;
 
   constructor(call: BatchIssueBadgeCall) {
+    this._call = call;
+  }
+}
+
+export class BulkMembershipURIChangeCall extends ethereum.Call {
+  get inputs(): BulkMembershipURIChangeCall__Inputs {
+    return new BulkMembershipURIChangeCall__Inputs(this);
+  }
+
+  get outputs(): BulkMembershipURIChangeCall__Outputs {
+    return new BulkMembershipURIChangeCall__Outputs(this);
+  }
+}
+
+export class BulkMembershipURIChangeCall__Inputs {
+  _call: BulkMembershipURIChangeCall;
+
+  constructor(call: BulkMembershipURIChangeCall) {
+    this._call = call;
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
+  }
+
+  get tokenUri(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+}
+
+export class BulkMembershipURIChangeCall__Outputs {
+  _call: BulkMembershipURIChangeCall;
+
+  constructor(call: BulkMembershipURIChangeCall) {
+    this._call = call;
+  }
+}
+
+export class BulkUpdateMembershipCall extends ethereum.Call {
+  get inputs(): BulkUpdateMembershipCall__Inputs {
+    return new BulkUpdateMembershipCall__Inputs(this);
+  }
+
+  get outputs(): BulkUpdateMembershipCall__Outputs {
+    return new BulkUpdateMembershipCall__Outputs(this);
+  }
+}
+
+export class BulkUpdateMembershipCall__Inputs {
+  _call: BulkUpdateMembershipCall;
+
+  constructor(call: BulkUpdateMembershipCall) {
+    this._call = call;
+  }
+
+  get tokenId(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
+  }
+
+  get data(): Array<BigInt> {
+    return this._call.inputValues[1].value.toBigIntArray();
+  }
+
+  get tokenUri(): Array<string> {
+    return this._call.inputValues[2].value.toStringArray();
+  }
+}
+
+export class BulkUpdateMembershipCall__Outputs {
+  _call: BulkUpdateMembershipCall;
+
+  constructor(call: BulkUpdateMembershipCall) {
+    this._call = call;
+  }
+}
+
+export class BurnBadgeCall extends ethereum.Call {
+  get inputs(): BurnBadgeCall__Inputs {
+    return new BurnBadgeCall__Inputs(this);
+  }
+
+  get outputs(): BurnBadgeCall__Outputs {
+    return new BurnBadgeCall__Outputs(this);
+  }
+}
+
+export class BurnBadgeCall__Inputs {
+  _call: BurnBadgeCall;
+
+  constructor(call: BurnBadgeCall) {
+    this._call = call;
+  }
+
+  get badgeTokenId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class BurnBadgeCall__Outputs {
+  _call: BurnBadgeCall;
+
+  constructor(call: BurnBadgeCall) {
     this._call = call;
   }
 }
@@ -1038,44 +1205,6 @@ export class IssueBadgeCall__Outputs {
   _call: IssueBadgeCall;
 
   constructor(call: IssueBadgeCall) {
-    this._call = call;
-  }
-}
-
-export class IssueMembershipCall extends ethereum.Call {
-  get inputs(): IssueMembershipCall__Inputs {
-    return new IssueMembershipCall__Inputs(this);
-  }
-
-  get outputs(): IssueMembershipCall__Outputs {
-    return new IssueMembershipCall__Outputs(this);
-  }
-}
-
-export class IssueMembershipCall__Inputs {
-  _call: IssueMembershipCall;
-
-  constructor(call: IssueMembershipCall) {
-    this._call = call;
-  }
-
-  get to(): Array<Address> {
-    return this._call.inputValues[0].value.toAddressArray();
-  }
-
-  get data(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get tokenUri(): string {
-    return this._call.inputValues[2].value.toString();
-  }
-}
-
-export class IssueMembershipCall__Outputs {
-  _call: IssueMembershipCall;
-
-  constructor(call: IssueMembershipCall) {
     this._call = call;
   }
 }

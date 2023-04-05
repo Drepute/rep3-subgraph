@@ -136,12 +136,6 @@
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "data",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
       }
@@ -303,25 +297,6 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "uriString",
-        "type": "string"
-      }
-    ],
-    "name": "_stringToArray",
-    "outputs": [
-      {
-        "internalType": "string[]",
-        "name": "",
-        "type": "string[]"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "approver",
         "type": "address"
@@ -354,7 +329,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "account",
         "type": "address"
       }
     ],
@@ -367,6 +342,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "badgeTokenIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "batchBurnBadge",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -393,6 +381,60 @@
       }
     ],
     "name": "batchIssueBadge",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "tokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "string",
+        "name": "tokenUri",
+        "type": "string"
+      }
+    ],
+    "name": "bulkMembershipURIChange",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "tokenId",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "data",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "tokenUri",
+        "type": "string[]"
+      }
+    ],
+    "name": "bulkUpdateMembership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "badgeTokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "burnBadge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -571,6 +613,25 @@
         "type": "uint256"
       }
     ],
+    "name": "getTokenData",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
     "name": "getType",
     "outputs": [
       {
@@ -675,25 +736,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "forwarder",
-        "type": "address"
-      }
-    ],
-    "name": "isTrustedForwarder",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "memberTokenId",
         "type": "uint256"
@@ -722,24 +764,49 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "to",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "data",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "tokenUri",
-        "type": "string"
+        "internalType": "uint16",
+        "name": "levelCategory",
+        "type": "uint16"
       }
     ],
-    "name": "issueMembership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "membershipExists",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "level",
+        "type": "uint8"
+      }
+    ],
+    "name": "membershipLevelExists",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

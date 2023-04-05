@@ -10,6 +10,7 @@ import {
 } from "../generated/templates/REP3Token/REP3Token";
 import { AssociationBadge, Dao, MembershipNFT } from "../generated/schema";
 import { REP3Token as REP3TokenTemplate } from "../generated/templates";
+import { BigInt } from "@graphprotocol/graph-ts";
 
 export function handleProxyDeployed(event: ProxyDeployed): void {
   let dao = Dao.load(event.params.contractAddress);
@@ -120,7 +121,14 @@ export function handleIssue(event: Issue): void {
       );
       associationBadges.txHash = event.transaction.hash;
       associationBadges.claimer = proxyContract.ownerOf(event.params.tokenId);
-      associationBadges.data = event.params.data;
+      let callResult = proxyContract.try_getTokenData(event.params.tokenId);
+      if (callResult.reverted) {
+        associationBadges.data = BigInt.fromI32(0);
+      } else {
+        associationBadges.data = proxyContract.getTokenData(
+          event.params.tokenId
+        );
+      }
       associationBadges.time = event.block.timestamp;
       associationBadges.save();
       dao.save();

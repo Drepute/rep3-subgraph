@@ -38,5 +38,5 @@ type AssociationBadge @entity {
   claimer: Bytes!
   time: BigInt!
   txHash: Bytes!
-  data:BigInt!
+  data: BigInt!
 }
